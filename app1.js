@@ -1,42 +1,46 @@
 const fs = require('fs');
 
-// Lire le fichier des utilisateurs
-let rawdata = fs.readFileSync('users.json');
-let users = JSON.parse(rawdata);
 
-// Récupérer l'argument d'entrée
-const input = process.argv[2];
+function readUserFile(){
+  let rawdata = fs.readFileSync('users.json');
+  return users = JSON.parse(rawdata);
+}
 
+function getInput(){
+  let input = process.argv[2];
+  return input;
+}
+
+function compteur(users, propriete){
+  return users.reduce((acc, user) => {
+    acc[user[propriete]] = (acc[user[propriete]] || 0) + 1;
+    return acc;
+  },{});
+}
+
+function trier_ordre_decroissant(compteur_par_propriete){
+  return Object.entries(compteur_par_propriete).sort((a,b) => b[1] - a[1]);
+}
+
+function afficher_liste(compteur_par_propriete_trier,propriete){
+  compteur_par_propriete_trier.forEach(([propriete,count]) => {
+    console.log(`${propriete} - ${count}`);
+  });
+}
+
+
+let input = getInput();
+const user = readUserFile();
 if(input === 'country')
 {
-    // Calculer le compteur d'utilisateurs par pays
-  const countByCountry = users.reduce((acc, user) => {
-    acc[user.country] = (acc[user.country] || 0) + 1;
-    return acc;
-  }, {});
-
-  // Trier les pays par ordre décroissant de compteur d'utilisateurs
-  const sortedByCount = Object.entries(countByCountry).sort((a, b) => b[1] - a[1]);
-
-  // Afficher la liste des pays et le compteur d'utilisateurs à côté
-  sortedByCount.forEach(([country, count]) => {
-    console.log(`${country} - ${count}`);
-  });
+  const compteur_par_pays = compteur(user,'country');
+  const compteur_par_pays_trier = trier_ordre_decroissant(compteur_par_pays);
+  afficher_liste(compteur_par_pays_trier,'country');
 }
 
 else if(input === 'company')
 {
-    // Calculer le compteur d'utilisateurs par pays
-  const countByCompany = users.reduce((acc, user) => {
-    acc[user.company] = (acc[user.company] || 0) + 1;
-    return acc;
-  }, {});
-
-  // Trier les pays par ordre décroissant de compteur d'utilisateurs
-  const sortedByCount = Object.entries(countByCompany).sort((a, b) => b[1] - a[1]);
-
-  // Afficher la liste des pays et le compteur d'utilisateurs à côté
-  sortedByCount.forEach(([company, count]) => {
-    console.log(`${company} - ${count}`);
-  });
+  const compteur_par_company = compteur(user,'company');
+  const compteur_par_company_trier = trier_ordre_decroissant(compteur_par_company);
+  afficher_liste(compteur_par_company_trier,'company');
 }
